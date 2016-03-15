@@ -91,6 +91,6 @@ form input[type=text] {
     font-weight: bold;
 }
 
-#selectRoom {
+#roomSelect {
     max-width: 100px;
 }

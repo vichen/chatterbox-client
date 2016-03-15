@@ -17,7 +17,7 @@ App.prototype.addRoom = function(roomNameArguments) {
     options += '<option value="' + name + '">' + name + '</option>';
   });
 
-  $('#selectRoom').append(options);
+  $('#roomSelect').append(options);
 };
 
 App.prototype.cleanMessage = function(message) {
@@ -33,7 +33,7 @@ App.prototype.cleanMessage = function(message) {
 App.prototype.addMessage = function(message) {
   if (message.text === undefined) { return; }
 
-  var message = this.cleanMessage(message);
+  // var message = this.cleanMessage(message);
 
   var $chatItem = $('<div></div>');
   $chatItem.addClass('chat');
@@ -44,7 +44,7 @@ App.prototype.addMessage = function(message) {
   $chatItem.append($username);
 
   //add click function to username... call addFriend
-  $username.click( this.addFriend.bind(this, $username.text()) );
+  //$username.click( this.addFriend.bind(this, $username.text()) );
 
   var $message = $('<div></div>'); $message.text(message.text);
   if (this.friendlist.indexOf(message.username) !== -1) {
@@ -60,12 +60,14 @@ App.prototype.init = function() {
   this.roomlist = [];
   this.friendlist = [];
   this.addRoom('all');
-  $('#selectRoom').val('all');
+  $('#roomSelect').val('all');
   this.fetch('all');
+  $('#chats').on('click', '.username', app.addFriend);
+  $('.submit').on('click', app.handleSubmit);
 };
 
 App.prototype.autoUpdate = function() {
-  var currentRoom = $('#selectRoom').val();
+  var currentRoom = $('#roomSelect').val();
   this.fetch(currentRoom);
 };
 
@@ -88,7 +90,6 @@ App.prototype.fetch = function(room) {
           this.roomlist.push(item.roomname);
           //add to roomlist selection <option> field
           roomsToAdd.push(item.roomname);
-          // this.addRoom(item.roomname);
         }
         //display each message if it matches the selected roomname
         if (room === 'all' || item.roomname === room) {
@@ -96,7 +97,7 @@ App.prototype.fetch = function(room) {
         } 
       }.bind(this));
       this.addRoom.apply(this, roomsToAdd);
-      $('#selectRoom').val(room);
+      $('#roomSelect').val(room);
 
     }.bind(app),
     error: function (data) {
@@ -124,21 +125,26 @@ App.prototype.send = function(message) {
   });
 };
 
-App.prototype.addFriend = function(name) {
-  if (this.friendlist.indexOf(name) === -1) {
-    $('#friendList').append('<div class="friend">' + name + '</div>');
-    this.friendlist.push(name);
-  }
+App.prototype.addFriend = function(evt) {
+  var name = $(evt.currentTarget).text();
 
+  if (name && app.friendlist.indexOf(name) === -1) {
+    $('#friendList').append('<div class="friend">' + name + '</div>');
+    app.friendlist.push(name);
+  }
 };
 
-App.prototype.handleSubmit = function(message) {
+App.prototype.handleSubmit = function(evt) {
+  evt.preventDefault();
     //get the message from .userMessage
   var $userMessage = $('.userMessage').val();
   //get the currently selected roomname (default to 'all')
-  var $room = $('#selectRoom').val();
+  var $room = $('#roomSelect').val();
   if ($room === 'all') { $room = undefined; }
-  $room = $('#newRoomName').val();
+
+  var newRoomName = $('#newRoomName').val();
+  if ( newRoomName !== undefined && newRoomName !== '') { $room = newRoomName; }
+
   //get username from URL
   var grabUser = function(URLtext) {
     var name = URLtext.match(/&|\?username=(.*)/)[1];
@@ -147,8 +153,8 @@ App.prototype.handleSubmit = function(message) {
   var thisURL = window.location.search;
   var user = grabUser(thisURL);
 
-  App.prototype.send({username: user, text: $userMessage, roomname: $room });
-  App.prototype.fetch($room);
+  app.send({username: user, text: $userMessage, roomname: $room });
+  app.fetch($room);
   $('.userMessage').val('');
   $('#newRoomName').val('');
 };

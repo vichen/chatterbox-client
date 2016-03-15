@@ -23,11 +23,11 @@
         <!-- message prompt -->
         Post a message! <input type="text" class="userMessage"></input>
         <!-- button -->
-        <input class="submit" type="button" value="Submit" onclick="app.handleSubmit()"></input>
+        <input class="submit" type="button" value="Submit"></input>
           
         <div>Post in a new room: <input type="text" class="newRoomName"></input></div> 
         <p>Current Room</p>
-        <select onChange="app.fetch($('#selectRoom').val())" id="selectRoom"></select>
+        <select  id="roomSelect"></select>
       </form>
     </div>
 
@@ -37,3 +37,5 @@
     <div id="friendList"><h2>My Friends</h2></div>
   </body>
 </html>
+
+<!-- onChange="app.fetch($('#roomSelect').val())" -->
