@@ -1,6 +1,8 @@
 // YOUR CODE HERE:
 
-var App = function() {};
+var App = function() {
+  
+};
 
 App.prototype.clearMessages = function() {
   $('#chats').html('');
@@ -9,13 +11,18 @@ App.prototype.server = 'https://api.parse.com/1/classes/messages';
 
 App.prototype.addRoom = function(roomName) {
   $('#selectRoom').append('<option value="' + roomName + '">' + roomName + '</option>');
+  console.log($('select option:selected').val());
 };
+
+// App.prototype.changeRoom = function() {
+
+// };
 
 App.prototype.addMessage = function(message) {
   var $chatItem = $('<div></div>');
   $chatItem.addClass('chat');
   $chatItem.addClass(message.roomname);
-  
+    
   var $username = $('<span></span>');
   $username.addClass('username'); $username.text(message.username);
   $chatItem.append($username);
@@ -33,10 +40,11 @@ App.prototype.init = function() {
   var selectedRoom = $('#selectRoom').val();
   this.roomlist = [];
   this.fetch(selectedRoom);
+  // $('#selectRoom').change()
 };
 
 App.prototype.fetch = function(room) {
-  var room = room || 'lobby';
+
   $.ajax({
     // This is the url you should use to communicate with the parse API server.
     url: this.server,
@@ -45,23 +53,24 @@ App.prototype.fetch = function(room) {
     contentType: 'application/json',
     success: function (data) {
       console.log('chatterbox: Messages retrieved.');
-      //clear messages
+      //clear messages and roomlist
       this.clearMessages();
+      //$('#selectRoom').html('');
+
       //update our list of available chatrooms
       data.results.forEach(function(item) {
-        if (!this.roomlist.indexOf(item.roomname)) {
+        if (this.roomlist.indexOf(item.roomname) === -1 && item.roomname !== undefined) {
           this.roomlist.push(item.roomname);
           //add to roomlist selection <option> field
-          this.addRoom(item.roomName);
+          this.addRoom(item.roomname);
         }
-      }.bind(this));
-
-      //display each message
-      data.results.forEach(function(item) {
-        if (item.roomname === room) {
+        //display each message if it matches the selected roomname
+        if (room === 'all' || item.roomname === room) {
           this.addMessage(item);
         } 
       }.bind(this));
+
+      
     }.bind(this),
     error: function (data) {
       // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -95,6 +104,9 @@ App.prototype.addFriend = function(name) {
 App.prototype.handleSubmit = function(message) {
     //get the message from .userMessage
   var $userMessage = $('.userMessage').val();
+  //get the currently selected roomname (default to 'all')
+  var $room = $('#selectRoom').val() || 'lobby';
+  console.log($room);
 
   var grabUser = function(URLtext) {
     var name = URLtext.match(/&|\?username=(.*)/)[1];
@@ -104,15 +116,10 @@ App.prototype.handleSubmit = function(message) {
   var thisURL = window.location.search;
   var user = grabUser(thisURL);
   //var message = $('input.userMessage');
-  App.prototype.send({username: user, text: $userMessage });
-  App.prototype.fetch();
+  App.prototype.send({username: user, text: $userMessage, roomname: $room });
+  App.prototype.fetch($room);
 };
 
 
-
-
-
-
-
 var app = new App;
-app.init();
+$(document).ready(app.init());

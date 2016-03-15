@@ -23,9 +23,7 @@
         <input type="button" value="Submit" onclick="app.handleSubmit()"></input>
       </form>
 
-      <select id="selectRoom">
-        <option value="lobby" selected>lobby</option>
-      </select>
+      <select onChange="app.fetch($('#selectRoom').val())" id="selectRoom"></select>
     </div>
 
     </div>
