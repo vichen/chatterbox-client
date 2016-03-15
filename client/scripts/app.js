@@ -33,7 +33,7 @@ App.prototype.addMessage = function(message) {
   var $message = $('<div></div>'); $message.text(message.text);
   $chatItem.append($message);
   
-  $('#chats').append($chatItem);
+  $('#chats').prepend($chatItem);
 };
 
 App.prototype.init = function() {
@@ -55,6 +55,7 @@ App.prototype.fetch = function(room) {
       console.log('chatterbox: Messages retrieved.');
       //clear messages and roomlist
       this.clearMessages();
+      //this.roomlist = [];
       //$('#selectRoom').html('');
 
       //update our list of available chatrooms
@@ -71,7 +72,7 @@ App.prototype.fetch = function(room) {
       }.bind(this));
 
       
-    }.bind(this),
+    }.bind(app),
     error: function (data) {
       // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
       console.error('chatterbox: Failed to retrieve messages', data);
