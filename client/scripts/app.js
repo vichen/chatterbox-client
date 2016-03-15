@@ -13,11 +13,21 @@ App.prototype.addRoom = function(roomName) {
   $('#selectRoom').append('<option value="' + roomName + '">' + roomName + '</option>');
 };
 
-// App.prototype.changeRoom = function() {
-
-// };
+App.prototype.cleanMessage = function(message) {
+  //clean name, message, and roomname
+  for (var prop in message) {
+    if (message.hasOwnProperty(prop)) {
+      message[prop] = filterXSS(message[prop]);
+    }
+  }
+  return message;
+};
 
 App.prototype.addMessage = function(message) {
+  if (message.text === undefined) { return; }
+
+  var message = this.cleanMessage(message);
+
   var $chatItem = $('<div></div>');
   $chatItem.addClass('chat');
   $chatItem.addClass(message.roomname);
@@ -40,15 +50,19 @@ App.prototype.addMessage = function(message) {
 };
 
 App.prototype.init = function() {
-  var selectedRoom = $('#selectRoom').val();
   this.roomlist = [];
   this.friendlist = [];
-  this.fetch(selectedRoom);
-  // $('#selectRoom').change()
+  this.addRoom('all');
+  $('#selectRoom').val('all');
+  this.fetch('all');
+};
+
+App.prototype.autoUpdate = function() {
+  var currentRoom = $('#selectRoom').val();
+  this.fetch(currentRoom);
 };
 
 App.prototype.fetch = function(room) {
-
   $.ajax({
     // This is the url you should use to communicate with the parse API server.
     url: this.server,
@@ -107,27 +121,31 @@ App.prototype.addFriend = function(name) {
     $('#friendList').append('<div class="friend">' + name + '</div>');
     this.friendlist.push(name);
   }
+
 };
 
 App.prototype.handleSubmit = function(message) {
     //get the message from .userMessage
   var $userMessage = $('.userMessage').val();
   //get the currently selected roomname (default to 'all')
-  var $room = $('#selectRoom').val() || 'lobby';
-  console.log($room);
-
+  var $room = $('#selectRoom').val();
+  if ($room === 'all') { $room = undefined; }
+  //get username from URL
   var grabUser = function(URLtext) {
     var name = URLtext.match(/&|\?username=(.*)/)[1];
     return name;
   };
-
   var thisURL = window.location.search;
   var user = grabUser(thisURL);
-  //var message = $('input.userMessage');
+
   App.prototype.send({username: user, text: $userMessage, roomname: $room });
   App.prototype.fetch($room);
 };
 
 
 var app = new App;
-$(document).ready(app.init());
+$(document).ready(
+  function() {
+    app.init();
+    setInterval(app.autoUpdate.bind(app), 3000);
+  });
