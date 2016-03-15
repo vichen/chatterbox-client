@@ -73,6 +73,7 @@ form input[type=text] {
     background-color: #ddd;
 }
 
+
 .spinner {
     float: right;
     height: 46px;
@@ -81,4 +82,7 @@ form input[type=text] {
 
 .spinner img {
     padding: 10px;
+}
+.username:hover {
+    cursor: pointer;
 }
