@@ -20,11 +20,15 @@
       <!-- Your HTML goes here! -->
     <div id="sendBox">
       <form id="send">
+        <!-- message prompt -->
         Post a message! <input type="text" class="userMessage"></input>
+        <!-- button -->
         <input class="submit" type="button" value="Submit" onclick="app.handleSubmit()"></input>
+          
+        <div>Post in a new room: <input type="text" class="newRoomName"></input></div> 
+        <p>Current Room</p>
+        <select onChange="app.fetch($('#selectRoom').val())" id="selectRoom"></select>
       </form>
-
-      <select onChange="app.fetch($('#selectRoom').val())" id="selectRoom"></select>
     </div>
 
     </div>

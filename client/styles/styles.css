@@ -90,3 +90,7 @@ form input[type=text] {
 .myfriend {
     font-weight: bold;
 }
+
+#selectRoom {
+    max-width: 100px;
+}

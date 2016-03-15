@@ -9,8 +9,15 @@ App.prototype.clearMessages = function() {
 };
 App.prototype.server = 'https://api.parse.com/1/classes/messages';
 
-App.prototype.addRoom = function(roomName) {
-  $('#selectRoom').append('<option value="' + roomName + '">' + roomName + '</option>');
+App.prototype.addRoom = function(roomNameArguments) {
+  var roomsToAdd = Array.prototype.slice.call(arguments);
+  var options = '';
+  
+  roomsToAdd.forEach(function(name) {
+    options += '<option value="' + name + '">' + name + '</option>';
+  });
+
+  $('#selectRoom').append(options);
 };
 
 App.prototype.cleanMessage = function(message) {
@@ -73,23 +80,24 @@ App.prototype.fetch = function(room) {
       console.log('chatterbox: Messages retrieved.');
       //clear messages and roomlist
       this.clearMessages();
-      //this.roomlist = [];
-      //$('#selectRoom').html('');
 
+      var roomsToAdd = [];
       //update our list of available chatrooms
       data.results.forEach(function(item) {
         if (this.roomlist.indexOf(item.roomname) === -1 && item.roomname !== undefined) {
           this.roomlist.push(item.roomname);
           //add to roomlist selection <option> field
-          this.addRoom(item.roomname);
+          roomsToAdd.push(item.roomname);
+          // this.addRoom(item.roomname);
         }
         //display each message if it matches the selected roomname
         if (room === 'all' || item.roomname === room) {
           this.addMessage(item);
         } 
       }.bind(this));
+      this.addRoom.apply(this, roomsToAdd);
+      $('#selectRoom').val(room);
 
-      
     }.bind(app),
     error: function (data) {
       // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -130,6 +138,7 @@ App.prototype.handleSubmit = function(message) {
   //get the currently selected roomname (default to 'all')
   var $room = $('#selectRoom').val();
   if ($room === 'all') { $room = undefined; }
+  $room = $('#newRoomName').val();
   //get username from URL
   var grabUser = function(URLtext) {
     var name = URLtext.match(/&|\?username=(.*)/)[1];
@@ -140,6 +149,8 @@ App.prototype.handleSubmit = function(message) {
 
   App.prototype.send({username: user, text: $userMessage, roomname: $room });
   App.prototype.fetch($room);
+  $('.userMessage').val('');
+  $('#newRoomName').val('');
 };
 
 
