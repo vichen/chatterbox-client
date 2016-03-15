@@ -18,9 +18,9 @@
       <h1>chatterbox</h1>
       <!-- Your HTML goes here! -->
     <div id="sendBox">
-      <form id="textBox">
+      <form id="send">
         Post a message! <input type="text" class="userMessage"></input>
-        <input type="button" value="Submit" onclick="app.handleSubmit()"></input>
+        <input class="submit" type="button" value="Submit" onclick="app.handleSubmit()"></input>
       </form>
 
       <select onChange="app.fetch($('#selectRoom').val())" id="selectRoom"></select>
@@ -29,7 +29,6 @@
     </div>
     
     <div id="chats"></div>
-    <div id="roomSelect"></div>
-    <div id="friendList"></div>
+    <div id="friendList"><h2>My Friends</h2></div>
   </body>
 </html>

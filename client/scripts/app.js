@@ -11,7 +11,6 @@ App.prototype.server = 'https://api.parse.com/1/classes/messages';
 
 App.prototype.addRoom = function(roomName) {
   $('#selectRoom').append('<option value="' + roomName + '">' + roomName + '</option>');
-  console.log($('select option:selected').val());
 };
 
 // App.prototype.changeRoom = function() {
@@ -31,14 +30,19 @@ App.prototype.addMessage = function(message) {
   $username.click( this.addFriend.bind(this, $username.text()) );
 
   var $message = $('<div></div>'); $message.text(message.text);
+  if (this.friendlist.indexOf(message.username) !== -1) {
+    $message.addClass('myfriend');
+  }
   $chatItem.append($message);
   
-  $('#chats').prepend($chatItem);
+  $('#chats').append($chatItem);
+  
 };
 
 App.prototype.init = function() {
   var selectedRoom = $('#selectRoom').val();
   this.roomlist = [];
+  this.friendlist = [];
   this.fetch(selectedRoom);
   // $('#selectRoom').change()
 };
@@ -99,7 +103,10 @@ App.prototype.send = function(message) {
 };
 
 App.prototype.addFriend = function(name) {
-  console.log(name);
+  if (this.friendlist.indexOf(name) === -1) {
+    $('#friendList').append('<div class="friend">' + name + '</div>');
+    this.friendlist.push(name);
+  }
 };
 
 App.prototype.handleSubmit = function(message) {
