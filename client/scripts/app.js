@@ -1,7 +1,7 @@
 // YOUR CODE HERE:
 
 var App = function() {
-  
+  this.username = 'anonymous';
 };
 
 App.prototype.clearMessages = function() {
@@ -63,7 +63,11 @@ App.prototype.init = function() {
   $('#roomSelect').val('all');
   this.fetch('all');
   $('#chats').on('click', '.username', app.addFriend);
-  $('.submit').on('click', app.handleSubmit);
+  $('#send').on('submit', app.handleSubmit);
+  this.username = (function() {
+    var name = (window.location.search).substr(10);
+    return name;
+  })();
 };
 
 App.prototype.autoUpdate = function() {
@@ -142,21 +146,15 @@ App.prototype.handleSubmit = function(evt) {
   var $room = $('#roomSelect').val();
   if ($room === 'all') { $room = undefined; }
 
-  var newRoomName = $('#newRoomName').val();
+  var newRoomName = $('.newRoomName').val();
   if ( newRoomName !== undefined && newRoomName !== '') { $room = newRoomName; }
 
-  //get username from URL
-  var grabUser = function(URLtext) {
-    var name = URLtext.match(/&|\?username=(.*)/)[1];
-    return name;
-  };
-  var thisURL = window.location.search;
-  var user = grabUser(thisURL);
-
-  app.send({username: user, text: $userMessage, roomname: $room });
+  app.send({username: app.username, text: $userMessage, roomname: $room });
   app.fetch($room);
   $('.userMessage').val('');
-  $('#newRoomName').val('');
+  $('.newRoomName').val('');
+
+  
 };
 
 
