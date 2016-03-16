@@ -102,6 +102,8 @@ App.prototype.fetch = function(room) {
       }.bind(this));
       this.addRoom.apply(this, roomsToAdd);
       $('#roomSelect').val(room);
+      $('.spinner').hide();
+      $('form input[type=submit]').attr('disabled', null);
 
     }.bind(app),
     error: function (data) {
@@ -140,7 +142,10 @@ App.prototype.addFriend = function(evt) {
 
 App.prototype.handleSubmit = function(evt) {
   evt.preventDefault();
-    //get the message from .userMessage
+  $('.spinner').show();
+  $('form input[type=submit]').attr('disabled', true);
+
+  //get the message from .userMessage
   var $userMessage = $('.userMessage').val();
   //get the currently selected roomname (default to 'all')
   var $room = $('#roomSelect').val();
@@ -153,6 +158,7 @@ App.prototype.handleSubmit = function(evt) {
   app.fetch($room);
   $('.userMessage').val('');
   $('.newRoomName').val('');
+
 
   
 };
